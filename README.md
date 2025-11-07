@@ -9,15 +9,15 @@ This project explores how machine learning can be used to analyze and predict wi
 The main objectives are:
 1.	Detect and classify wildfire severity from satellite imagery using a CNN.
 2.	Examine temporal patterns in wildfire activity using time series analysis to identify seasonal trends, long-term changes, and potential links to temperature or drought conditions.
-3.	Visualize results through a severity-by-region map that highlights variation in fire intensity across Canada.
+3.	Visualize results through a severit by region map that highlights variation in fire intensity across Canada.
 
 Data Sources
 
 We are collecting open wildfire data from several public sources:
-	-	Canadian National Fire Database (CNFDB): ignition points, perimeters, burn area, and dates.
-	-	Canadian Wildland Fire Information System (CWFIS): Fire Weather Index (FWI), Daily Severity Rating (DSR), and regional climatology.
-	-	Satellite Imagery (Landsat 8, MODIS, or VIIRS): used for CNN feature extraction of active burn areas and post-fire severity (via NDVI or dNBR).
-	-	ERA5-Land or Daymet Weather Data: includes temperature, humidity, precipitation, and wind speed for time-series variables.
+-	Canadian National Fire Database (CNFDB): ignition points, perimeters, burn area, and dates.
+- Canadian Wildland Fire Information System (CWFIS): Fire Weather Index (FWI), Daily Severity Rating (DSR), and regional climatology.
+- Satellite Imagery (Landsat 8, MODIS, VIIRS): used for CNN input and for computing burn severity metrics such as NDVI or dNBR.
+- ERA5-Land or Daymet Weather Data: provides temperature, humidity, precipitation, and wind speed for time-series modeling.
 
 Methods
 
@@ -34,5 +34,5 @@ Methods
 	-	May include a Bayesian-style time series to capture uncertainty if data quality allows.
 
 Contributors
-	-	Ella Wiser
-	-	Lauren Montion
+-	Ella Wiser
+-	Lauren Montion
