@@ -7,9 +7,9 @@ Overview
 This project explores how machine learning can be used to analyze and predict wildfire behavior across North maerica. We apply two distinct different methods, Convolutional Neural Networks (CNNs) and Time Series Analysis. Our goal is to investigate patterns of wildfire ignition, spread, and severity using both spatial and temporal data.
 
 The main objectives are:
-	1.	Detect and classify wildfire severity from satellite imagery using a CNN.
-	2.	Examine temporal patterns in wildfire activity using time series analysis to identify seasonal trends, long-term changes, and potential links to temperature or drought conditions.
-	3.	Visualize results through a severity-by-region map that highlights variation in fire intensity across Canada.
+1.	Detect and classify wildfire severity from satellite imagery using a CNN.
+2.	Examine temporal patterns in wildfire activity using time series analysis to identify seasonal trends, long-term changes, and potential links to temperature or drought conditions.
+3.	Visualize results through a severity-by-region map that highlights variation in fire intensity across Canada.
 
 Data Sources
 
