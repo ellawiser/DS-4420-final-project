@@ -14,10 +14,10 @@ The main objectives are:
 Data Sources
 
 We are collecting open wildfire data from several public sources:
-	•	Canadian National Fire Database (CNFDB): ignition points, perimeters, burn area, and dates.
-	•	Canadian Wildland Fire Information System (CWFIS): Fire Weather Index (FWI), Daily Severity Rating (DSR), and regional climatology.
-	•	Satellite Imagery (Landsat 8, MODIS, or VIIRS): used for CNN feature extraction of active burn areas and post-fire severity (via NDVI or dNBR).
-	•	ERA5-Land or Daymet Weather Data: includes temperature, humidity, precipitation, and wind speed for time-series variables.
+	-	Canadian National Fire Database (CNFDB): ignition points, perimeters, burn area, and dates.
+	-	Canadian Wildland Fire Information System (CWFIS): Fire Weather Index (FWI), Daily Severity Rating (DSR), and regional climatology.
+	-	Satellite Imagery (Landsat 8, MODIS, or VIIRS): used for CNN feature extraction of active burn areas and post-fire severity (via NDVI or dNBR).
+	-	ERA5-Land or Daymet Weather Data: includes temperature, humidity, precipitation, and wind speed for time-series variables.
 
 Methods
 
