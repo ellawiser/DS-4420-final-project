@@ -2,7 +2,7 @@ import os
 import pandas as pd
 
 # Dataset root
-ROOT_DIR = "Dataset_BUSI_with_GT"
+ROOT_DIR = "1/Dataset_BUSI_with_GT"
 
 # Create a list of classes
 classes = ["benign", "malignant", "normal"]

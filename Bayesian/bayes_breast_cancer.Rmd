@@ -8,6 +8,19 @@ date: "2025-11-27"
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(brms)
+theme_set(
+  theme_minimal() +
+    theme(
+      plot.title = element_text(face = "bold"),
+      panel.grid.minor = element_blank()
+    )
+)
+
+update_geom_defaults("line",   list(color = "hotpink"))
+update_geom_defaults("point",  list(color = "hotpink"))
+update_geom_defaults("bar",    list(fill  = "hotpink"))
+update_geom_defaults("col",    list(fill  = "hotpink"))
+update_geom_defaults("smooth", list(color = "hotpink", fill = "pink"))
 ```
 
 ## 1. Data loading and preprocessing
@@ -46,6 +59,55 @@ dim(bc_train)
 dim(bc_test)
 ```
 
+```{r}
+
+library(tidyverse)
+
+# Start from the original bc (unscaled) so the histograms are easier to read
+bc_long <- bc |>
+  mutate(class = factor(class, levels = c("B", "M"))) |>
+  pivot_longer(
+    cols = c(
+      clump_thickness,
+      uniformity_cell_size,
+      uniformity_cell_shape,
+      marginal_adhesion,
+      single_epithelial_cell_size,
+      bare_nuclei,
+      bland_chromatin,
+      normal_nucleoli,
+      mitoses
+    ),
+    names_to  = "feature",
+    values_to = "value"
+  )
+
+ggplot(bc_long, aes(x = value, fill = class)) +
+  geom_histogram(
+    position = "identity",
+    alpha = 0.5,
+    bins = 10,
+    color = "white"
+  ) +
+  facet_wrap(~ feature, scales = "free_x") +
+  scale_fill_manual(
+    values = c("B" = "#F9A1C2", "M" = "#C2185B"),
+    name = "Tumor class",
+    labels = c("Benign", "Malignant")
+  ) +
+  labs(
+    title = "Distribution of features by tumor class",
+    x = "Feature value",
+    y = "Count"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    strip.text = element_text(face = "bold")
+  )
+  
+```
+
 ## 2. Baseline logistic regression
 ```{r}
 glm_fit <- glm(
@@ -70,25 +132,40 @@ table(True = bc_test$class, Pred = glm_pred)
 ## 3. Bayesian logistic regression with `brms`
 ```{r}
 manual_prior_bc <- c(
-  set_prior("normal(0, 2)", class = "b")
+  set_prior("student_t(4, 0, 5)", class = "Intercept"),
+  set_prior("normal(0, 1)", class = "b")
 )
 
 bc_brm_logit <- brm(
-  class ~ .,
+  class ~ clump_thickness + bare_nuclei + uniformity_cell_shape +
+    marginal_adhesion + normal_nucleoli,
   family = bernoulli("logit"),
-  data   = bc_train,
+  data = bc_train,
+  iter = 6000,
+  warmup = 2000,
   chains = 4,
-  iter   = 2000,
-  warmup = 500,
-  prior  = manual_prior_bc
+  control = list(adapt_delta = 0.99, max_treedepth = 15),
+  prior = manual_prior_bc
 )
 
 summary(bc_brm_logit)
 ```
 
+```{r}
+saveRDS(
+  bc_brm_logit,
+  "/Users/ellawiser/Desktop/DS-4420-final-project/Data/bc_brm_logit.rds"
+)
+
+```
+
 ```{r bayes-diagnostics, fig.height=4, fig.width=7}
 plot(bc_brm_logit)
+
 ```
+
+
+
 
 ## 4. Posterior predictive probabilities and uncertainty
 ```{r}
@@ -150,7 +227,7 @@ summary(bc_test_pred$entropy)
 
 # Plot distribution of entropy
 ggplot(bc_test_pred, aes(x = entropy)) +
-  geom_histogram(bins = 30, fill = "steelblue", alpha = 0.7) +
+  geom_histogram(bins = 30, fill = "hotpink", alpha = 0.7) +
   labs(
     title = "Predictive entropy for test patients",
     x = "Entropy",
@@ -161,11 +238,12 @@ ggplot(bc_test_pred, aes(x = entropy)) +
 ```{r}
 post_draws <- as.data.frame(bc_brm_logit)
 
-# Example: histogram of posterior for clump_thickness
+# histogram of posterior for clump_thickness
 if ("b_clump_thickness" %in% names(post_draws)) {
   hist(
     post_draws$b_clump_thickness,
     main = "Posterior of coefficient for clump thickness",
+    col = "hotpink",
     xlab = "Coefficient value"
   )
 }
