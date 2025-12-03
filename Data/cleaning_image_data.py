@@ -19,6 +19,9 @@ for cls in classes:
         # skip mask images like "benign (1)_mask.png"
         if "_mask" in fname:
             continue
+        # skip mask images like "benign (1)_mask.png"
+        if "malignant" in fname:
+                continue
 
         img_path = os.path.join(folder, fname)
 
