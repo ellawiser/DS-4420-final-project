@@ -1,10 +1,10 @@
 import os
 import pandas as pd
 
-# Dataset root
+# dataset
 ROOT_DIR = "1/Dataset_BUSI_with_GT"
 
-# Create a list of classes
+# create a list of classes
 classes = ["benign", "malignant", "normal"]
 
 rows = []
@@ -19,7 +19,7 @@ for cls in classes:
         # skip mask images like "benign (1)_mask.png"
         if "_mask" in fname:
             continue
-        # skip mask images like "benign (1)_mask.png"
+        # skip malignant images
         if "malignant" in fname:
                 continue
 
