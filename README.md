@@ -20,19 +20,19 @@ This project uses two publicly available datasets:
 1. BUSI Breast Ultrasound Images (for CNN modeling)
 
 Contains ultrasound scans labeled as benign, malignant, or normal.
-- Used for binary classification: benign vs normal
-- Includes raw .png images
+* Used for binary classification: benign vs normal
+* Includes raw .png images
 Source: [Kaggle](https://www.kaggle.com/datasets/awsaf49/cbis-ddsm-breast-cancer-image-dataset/data)
 
 2. Breast Cancer Wisconsin Diagnostic Dataset (for Bayesian modeling)
 
-Tabular dataset containing 683 cases with nine cytological features such as:
-- clump thickness
-- uniformity of cell size
-- uniformity of cell shape
-- bare nuclei
-- marginal adhesion
-- and others
+Tabular dataset containing 683 cases with nine cytological features:
+* clump thickness
+* uniformity of cell size
+* uniformity of cell shape
+* bare nuclei
+* marginal adhesion
+* and others
 Each case is labeled as benign or malignant.
 Source: [Kaggle](https://www.kaggle.com/datasets/saurabhbadole/breast-cancer-wisconsin-state/data)
 
@@ -40,35 +40,35 @@ Source: [Kaggle](https://www.kaggle.com/datasets/saurabhbadole/breast-cancer-wis
 Methods
 
 1. Convolutional Neural Network (CNN) in Python
-- Implemented entirely from scratch in NumPy without deep learning libraries
-- Includes custom implementations of:
-- Convolution layers
-- Max pooling
-- Fully connected layers
-- ReLU and Sigmoid activations
-- Binary cross entropy loss
-- Backpropagation
-- Input images were preprocessed by converting to grayscale, resizing to 112 x 112, and standardizing pixel values
-- Final architecture:
-	- Three convolution blocks with ReLU
-	- One max pooling layer
-	- Flatten
-	- Fully connected hidden layer + Sigmoid output
-	- Trained with shuffled mini batches (batch size 16) for stability and generalization
+* Implemented entirely from scratch in NumPy without deep learning libraries
+* Includes custom implementations of:
+* Convolution layers
+* Max pooling
+* Fully connected layers
+* ReLU and Sigmoid activations
+* Binary cross entropy loss
+* Backpropagation
+* Input images were preprocessed by converting to grayscale, resizing to 112 x 112, and standardizing pixel values
+* Final architecture:
+	* Three convolution blocks with ReLU
+	* One max pooling layer
+	* Flatten
+	* Fully connected hidden layer + Sigmoid output
+	* Trained with shuffled mini batches (batch size 16) for stability and generalization
 
 
 2. Bayesian Logistic Regression in R (brms)
 
 We built three Bayesian models to understand how cell level features predict malignancy:
-	1.	A single predictor model using bare nuclei
-	2.	A five predictor model with informative Normal priors based on domain intuition
-	3.	A full nine predictor model using a horseshoe prior to shrink weaker predictors
+* A single predictor model using bare nuclei
+* A five predictor model with informative Normal priors based on domain intuition
+* A full nine predictor model using a horseshoe prior to shrink weaker predictors
 
 Key components:
-- Likelihood: logistic regression
-- Priors reflect reasonable expectations about how features relate to malignancy
-- MCMC sampling used to obtain posterior distributions
-- Models validated using posterior predictive checks, convergence diagnostics (Rhat), and accuracy metrics
+* Likelihood: logistic regression
+* Priors reflect reasonable expectations about how features relate to malignancy
+* MCMC sampling used to obtain posterior distributions
+* Models validated using posterior predictive checks, convergence diagnostics (Rhat), and accuracy metrics
 
 
 Dashboard:
