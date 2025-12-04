@@ -72,7 +72,7 @@ Key components:
 
 
 Dashboard:
-https://cq4mzt-ella-wiser.shinyapps.io/breast-cancer-dashboard-v2/ 
+https://cq4mzt-ella-wiser.shinyapps.io/breast-cancer-dashboard-v1/
 
 THANK YOU FOR VISITING OUR PROJECT! Feel free to reach out to us via email if you have any questions/comments/concerns. This was an awesome project and a great way to implement the things we learned in class.
 
