@@ -84,5 +84,4 @@ A Python Shiny dashboard presents:
 - Predictive probabilities
 - Model comparison metrics
 
--	Ella Wiser
--	Lauren Montion
+Ella Wiser & Lauren Montion
