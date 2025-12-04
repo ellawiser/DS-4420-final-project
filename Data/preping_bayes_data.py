@@ -28,11 +28,11 @@ df = pd.read_csv(
 # drop rows with missing values (bare nuclei often has "?")
 df = df.dropna()
 
-# Convert numeric columns to integer
+# convert numeric columns to integer
 numeric_cols = columns[:-1]
 df[numeric_cols] = df[numeric_cols].astype(int)
 
-# Convert class values: 2 -> B benign, 4 -> M malignant
+# convert class values: 2 -> B benign, 4 -> M malignant
 df["class"] = df["class"].map({2: "B", 4: "M"})
 
 # save cleaned CSV

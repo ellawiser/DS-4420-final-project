@@ -3,6 +3,13 @@ CNN/
 Dashboard/
 Data/
 anaconda_projects/
+__pycache__/
 *.ipynb
+*.rds
 *.R
+*.csv
+*.xlsx
 DrG.txt
+.git/
+.Rproj.user/
+*.log
