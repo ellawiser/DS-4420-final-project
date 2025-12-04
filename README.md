@@ -4,13 +4,13 @@ Breast Cancer Classification Project
 
 Overview
 
-This project explores two very different modeling approaches for predicting breast cancer outcomes: a Convolutional Neural Network (CNN) built from scratch in Python, and a set of Bayesian logistic regression models implemented in R. The goal is to compare image-based and feature-based methods for understanding tumor characteristics and predicting whether a case is benign or malignant.
+This project explores two very different modeling approaches for predicting breast cancer outcomes: a Convolutional Neural Network (CNN) built from scratch in Python, and a set of Bayesian logistic regression models implemented in R. The goal is to compare image based and feature based methods for understanding tumor characteristics and predicting whether a case is benign or malignant.
 
 The main objectives are:
 1.	Build and train a CNN from scratch using ultrasound images to classify benign versus normal scans.
-2.	Fit Bayesian logistic regression models that use cytology measurements to estimate the probability that a tumor is malignant.
+2.	Fit Bayesian logistic regression models that use different features to estimate the probability that a tumor is malignant.
 3.	Compare performance, interpretability, and uncertainty across both modeling approaches.
-4.	Present the results in an interactive dashboard built with Python Shiny.
+4.	Present the results in an interactive dashboard built in Python with Shiny.
 
 
 Data Sources
@@ -22,7 +22,6 @@ This project uses two publicly available datasets:
 Contains ultrasound scans labeled as benign, malignant, or normal.
 - Used for binary classification: benign vs normal
 - Includes raw .png images
-- Used to study pixel-level patterns and build the CNN pipeline
 Source: [Kaggle](https://www.kaggle.com/datasets/awsaf49/cbis-ddsm-breast-cancer-image-dataset/data)
 
 2. Breast Cancer Wisconsin Diagnostic Dataset (for Bayesian modeling)
@@ -34,7 +33,6 @@ Tabular dataset containing 683 cases with nine cytological features such as:
 - bare nuclei
 - marginal adhesion
 - and others
-
 Each case is labeled as benign or malignant.
 Source: [Kaggle](https://www.kaggle.com/datasets/saurabhbadole/breast-cancer-wisconsin-state/data)
 
@@ -52,36 +50,30 @@ Methods
 - Backpropagation
 - Input images were preprocessed by converting to grayscale, resizing to 112 x 112, and standardizing pixel values
 - Final architecture:
-- Three convolution blocks with ReLU
-- One max pooling layer
-- Flatten
-- Fully connected hidden layer + Sigmoid output
-- Trained with shuffled mini batches (batch size 16) for stability and generalization
+	- Three convolution blocks with ReLU
+	- One max pooling layer
+	- Flatten
+	- Fully connected hidden layer + Sigmoid output
+	- Trained with shuffled mini batches (batch size 16) for stability and generalization
 
 
 2. Bayesian Logistic Regression in R (brms)
 
-We built three Bayesian models to understand how cell-level features predict malignancy:
+We built three Bayesian models to understand how cell level features predict malignancy:
 	1.	A single predictor model using bare nuclei
 	2.	A five predictor model with informative Normal priors based on domain intuition
-	3.	A full nine-predictor model using a horseshoe prior to shrink weaker predictors
+	3.	A full nine predictor model using a horseshoe prior to shrink weaker predictors
 
 Key components:
 - Likelihood: logistic regression
 - Priors reflect reasonable expectations about how features relate to malignancy
 - MCMC sampling used to obtain posterior distributions
 - Models validated using posterior predictive checks, convergence diagnostics (Rhat), and accuracy metrics
-- Cost-sensitive thresholding included to reflect medical priorities (reducing missed cancers)
 
 
-Dashboard
+Dashboard:
+https://cq4mzt-ella-wiser.shinyapps.io/breast-cancer-dashboard-v2/ 
 
-A Python Shiny dashboard presents:
-- Data exploration
-- Feature distributions
-- CNN preprocessing visualizations
-- Bayesian posterior plots
-- Predictive probabilities
-- Model comparison metrics
+THANK YOU FOR VISITING OUR PROJECT! Feel free to reach out to us via email if you have any questions/comments/concerns. This was an awesome project and a great way to implement the things we learned in class.
 
 Ella Wiser & Lauren Montion
