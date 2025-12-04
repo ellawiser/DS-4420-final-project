@@ -1,0 +1,8 @@
+Bayesian/
+CNN/
+Dashboard/
+Data/
+anaconda_projects/
+*.ipynb
+*.R
+DrG.txt

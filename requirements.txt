@@ -1,0 +1,5 @@
+shiny
+pillow
+numpy
+pandas
+matplotlib

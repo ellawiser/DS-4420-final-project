@@ -1,29 +1,34 @@
-" Bayesian Breast Cancer Classification
-#   1. Loads and explores the Wisconsin Breast Cancer data
-#   2. Performs EDA with histograms, boxplots, and correlations
-#   3. Builds a baseline logistic regression model
-#   4. Builds a Bayesian logistic regression with informative priors
-#   5. Evaluates performance and uncertainty (entropy, credible intervals)
-#   6. (Optional) Fits a horseshoe prior model for comparison
-"
+# Bayesian Breast Cancer Classification
+# 1. Loads and explores the Wisconsin Breast Cancer data
+# 2. Define features
+# 3. EDA
+# 4. Correlation
+# 5. Data prep for modeling
+# 6. Feature selection
+# 7. Baseline logistic regression 
+# 8. Bayesian model with one predictor (bare_nuclei)
+# 9. Bayesian model with normal priors
+# 10. Try horseshoe prior model
+# 11. Diagnostics for main Bayesian model
+# 12. Feature effect viz
+# 13. Posterior prediction
+# 14. Uncertainty & entropy
+# 15. Model eval
+# 16. Final model performance comparison
+# 17. High level summary
+# 18. Save fitted models
 
 
-# Import libs and set theme
-
-# Basic data and plotting packages
+## Prep
+# import libs and set theme
 library(tidyverse)
-# Bayesian regression modeling via Stan
 library(brms)
-# Correlation visualization
 library(corrplot)
-# ROC curves and AUC
 library(pROC)
-# Multiple plots on one page if needed
 library(gridExtra)
-
 library(ggplot2)
 
-# Set a global plotting theme with a pink aesthetic
+# set a global plotting theme with a pink aesthetic
 theme_set(
   theme_minimal() +
     theme(
@@ -42,8 +47,7 @@ update_geom_defaults("smooth", list(color = "hotpink", fill = "pink"))
 
 
 
-# 1. Load Data And Basic EDA
-
+## 1. Load Data And Basic EDA
 bc <- read.csv("/Users/ellawiser/Desktop/DS-4420-final-project/Data/bayes_breast_cancer_clean.csv")
 
 # look at data
@@ -56,15 +60,15 @@ cat("Dataset dimensions:", dim(bc), "\n")
 cat("Class distribution:\n")
 print(table(bc$class))
 
-#Class distribution:
+cat("\nClass proportions:\n")
+print(prop.table(table(bc$class)))
+# Class proportions:
+# B         M 
+# 0.6500732 0.3499268 
+# Class distribution:
 # B  M 
 # 444 239 
 
-cat("\nClass proportions:\n")
-print(prop.table(table(bc$class)))
-#Class proportions:
-#B         M 
-#0.6500732 0.3499268 
 
 # counts + proportions
 class_df <- bc |>
@@ -74,7 +78,7 @@ class_df <- bc |>
 # plot distribution
 p1 <- ggplot(class_df, aes(x = class, y = n, fill = class)) +
   geom_col(width = 0.6, alpha = 0.8, color = "white") +
-  scale_fill_manual(values = c("B" = "#F9A1C2", "M" = "#C2185B")) +
+  scale_fill_manual(values = c("B" = "blue", "M" = "hotpink")) +
   labs(
     title = "Class Distribution: Benign vs Malignant",
     x = "Tumor Class",
@@ -85,7 +89,7 @@ p1 <- ggplot(class_df, aes(x = class, y = n, fill = class)) +
 
 print(p1)
 
-# 2. Define Features
+## 2. Define Features
 # numeric features
 features <- c(
   "clump_thickness",
@@ -100,9 +104,7 @@ features <- c(
 )
 
 
-# 3. Exploratory Data Analysis
-# Histograms of features by class
-
+## 3. Exploratory Data Analysis
 # convert to long format 
 bc_long <- bc |>
   mutate(class = factor(class, levels = c("B", "M"))) |>
@@ -127,17 +129,23 @@ ggplot(bc_long, aes(x = value, fill = class)) +
     labels = c("Benign", "Malignant")
   ) +
   labs(
-    title    = "Distribution of Features by Tumor Class",
-    subtitle = "Most features tend to have higher scores for malignant tumors",
-    x        = "Feature value",
-    y        = "Count"
+    title = "Distribution of Features by Tumor Class",
+    x     = "Feature value",
+    y     = "Count"
   ) +
-  theme(strip.text = element_text(face = "bold", size = 11))
-
-
-# Box plots of raw features
+  theme(
+    plot.title      = element_text(size = 20),
+    axis.title.x    = element_text(size = 15),
+    axis.title.y    = element_text(size = 15),
+    axis.text.x     = element_text(size = 10),
+    axis.text.y     = element_text(size = 10),
+    legend.title    = element_text(size = 15),
+    legend.text     = element_text(size = 15),
+    strip.text      = element_text(face = "bold", size = 15)
+  )
+# box plots of raw features
 ggplot(bc_long, aes(x = class, y = value, fill = class)) +
-  geom_boxplot(alpha = 0.7, outlier.color = "darkred", outlier.size = 2) +
+  geom_boxplot(alpha = 0.7, outlier.color = "black", outlier.size = 2) +
   facet_wrap(~ feature, scales = "free_y", ncol = 3) +
   scale_fill_manual(
     values = c("B" = "blue", "M" = "hotpink"),
@@ -170,7 +178,7 @@ bc_scaled_long <- bc_scaled |>
   )
 
 ggplot(bc_scaled_long, aes(x = class, y = value, fill = class)) +
-  geom_boxplot(alpha = 0.7, outlier.color = "darkred", outlier.size = 2) +
+  geom_boxplot(alpha = 0.7, outlier.color = "black", outlier.size = 2) +
   geom_hline(yintercept = 0, linetype = "dashed", alpha = 0.5) +
   facet_wrap(~ feature, ncol = 3) +
   scale_fill_manual(
@@ -190,8 +198,8 @@ ggplot(bc_scaled_long, aes(x = class, y = value, fill = class)) +
   )
 
 
-### Correlation
-# creating a numeric outcome for correlation 0 for benign, 1 for malignant
+## 4. Correlation
+# create a numeric outcome for correlation 0 for benign, 1 for malignant
 bc$malignant <- ifelse(bc$class == "M", 1, 0)
 
 # correlation of each feature
@@ -205,7 +213,7 @@ barplot(
   las  = 2,
   main = "Feature Correlation with Malignancy",
   ylab = "Correlation",
-  col  = colorRampPalette(c("lightpink", "hotpink", "darkred"))(length(features)),
+  col  = colorRampPalette(c("lightpink", "hotpink", "black"))(length(features)),
   ylim = c(0, 0.85),
   cex.names = 0.9
 )
@@ -224,7 +232,7 @@ corrplot(
 par(mfrow = c(1, 1))
 
 
-# Summary stats
+# summary stats
 summary_stats <- bc |>
   select(all_of(features), class) |>
   group_by(class) |>
@@ -269,8 +277,7 @@ print(mean_comparison)
 
 
 # Visualization with one predictor
-
-# using bare_nuclei as a single strong predictor
+# using bare_nuclei as a single predictor
 ggplot(bc, aes(x = bare_nuclei, y = as.numeric(class) - 1)) +
   geom_jitter(aes(color = class), height = 0.05, alpha = 0.6, size = 2) +
   geom_smooth(
@@ -291,13 +298,15 @@ ggplot(bc, aes(x = bare_nuclei, y = as.numeric(class) - 1)) +
 
 
 
-# 5. Data preprocessing for modeling
-# create dataset
-# remove sample_code 
-# remove malignant 
+## 5. Data preprocessing for modeling
+# create dataset, remove sample_code, remove malignant 
 bc_model <- bc |>
   select(-sample_code, -malignant)
+bc$class <- factor(bc$class, levels = c("B", "M"))
 
+bc_model <- bc |>
+  select(-sample_code, -malignant) |>
+  mutate(class = factor(class, levels = c("B", "M")))
 # identify numeric columns
 num_cols <- features
 
@@ -318,7 +327,7 @@ cat("Test set:", dim(bc_test), "\n")
 # Test set: 137 10 
 
 
-# 6. Feature selection
+## 6. Feature selection
 # combiniing correlation, selection decision, and medical importance
 feature_importance <- data.frame(
   Feature         = features,
@@ -356,7 +365,7 @@ mitoses                              Mitotic rate reflects growth"
 
 
 
-# 7. Baseline logistic regression 
+## 7. Baseline logistic regression 
 # GLM using the selected five features
 glm_fit <- glm(
   class ~ clump_thickness + bare_nuclei + uniformity_cell_shape +
@@ -403,9 +412,9 @@ True  B  M
 B 84  2
 M  5 46"
 
-# 8.  Bayesian model with one predictor
-# using bare_nuclei as a predictor
 
+## 8. Bayesian model with one predictor
+# using bare_nuclei as a predictor
 simple_bayes <- brm(
   class ~ bare_nuclei,
   family = bernoulli("logit"),
@@ -454,14 +463,12 @@ abline(v = 0, col = "red", lty = 2, lwd = 2)
 
 
 
-# 9. Main Bayesian model with normal priors
-#  uses five predictors with informative Normal priors
-# based on correlation and medical information
+## 9. Bayesian model with normal priors
+# uses five predictors with informative Normal priors based on correlation and medical information
 
 manual_prior_normal <- c(
   # Intercept is a Student t prior
   set_prior("student_t(4, 0, 5)", class = "Intercept"),
-  
   # slopes for the five selected features
   # stronger prior on bare_nuclei and clump_thickness because they correlate more with malignant tumors
   set_prior("normal(1.5, 1)",  class = "b", coef = "bare_nuclei"),
@@ -509,9 +516,8 @@ scale reduction factor on split chains (at convergence, Rhat = 1)."
 
 
 
-# 10. Trying horseshoe prior model
+## 10. Trying horseshoe prior model
 # using all nine features and a horseshoe prior on b
-
 bc_brm_horseshoe <- brm(
   class ~ clump_thickness + uniformity_cell_size + uniformity_cell_shape +
     marginal_adhesion + single_epithelial_cell_size + bare_nuclei +
@@ -520,7 +526,7 @@ bc_brm_horseshoe <- brm(
   data   = bc_train,
   prior  = c(
     set_prior("normal(-1, 2)", class = "Intercept"),
-    # Horseshoe prior for regression coefficients
+    # horseshoe prior for regression coefficients
     set_prior("horseshoe(df = 1, scale_global = 0.05)", class = "b")
   ),
   chains  = 4,
@@ -555,7 +561,7 @@ Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
 scale reduction factor on split chains (at convergence, Rhat = 1)."
 
-# 11. Diagnostics for main Bayesian model
+## 11. Diagnostics for main Bayesian model
 # visual diagnostics
 plot(bc_brm_normal, N = 6)
 
@@ -569,7 +575,7 @@ print(rhats)
 #[1] 1.0008953 1.0002715 1.0003332 0.9999807 1.0008690 1.0002429  
 
 
-# 12. Feature effect viz
+## 12. Feature effect viz
 # conditional effects show how each predictor affects P(malignant)
 par(mfrow = c(2, 3))
 plot(conditional_effects(bc_brm_normal, "clump_thickness"))
@@ -631,7 +637,7 @@ ggplot(effects, aes(x = reorder(Feature, Mean), y = Mean)) +
 
 
 
-# 13. Posterior predictive analysis
+# 13. Posterior predictions
 # posterior predictive probabilities on test data
 post_prob_normal    <- posterior_epred(bc_brm_normal,    newdata = bc_test)
 post_prob_horseshoe <- posterior_epred(bc_brm_horseshoe, newdata = bc_test)
@@ -681,7 +687,7 @@ bc_test_pred <- bc_test |>
 
 
 
-# 14. Uncertainty / entropy
+## 14. Uncertainty & entropy
 # the entropy function for Bernoulli predictive probability
 # low entropy = high confidence, high entropy = near 0.5 probability
 entropy_fun <- function(p) {
@@ -824,7 +830,7 @@ legend(
 
 
 # 16. Final model performance comparison
-# helper to compute common metrics
+# helper to compute metrics
 calc_metrics <- function(probs, true_class, threshold = 0.5) {
   pred <- factor(ifelse(probs > threshold, "M", "B"), levels = c("B", "M"))
   cm   <- table(True = true_class, Pred = pred)
@@ -864,9 +870,7 @@ print(results)
 
 
 # 17. High level summary
-
 cat("Clinical style summary\n\n")
-
 cat("1. Strongest predictors:\n")
 cat("   Bare nuclei (correlation =", round(cor_with_outcome["bare_nuclei", ], 3), ")\n")
 #Bare nuclei (correlation = 0.823 )
@@ -903,5 +907,5 @@ saveRDS(
   "/Users/ellawiser/Desktop/DS-4420-final-project/Data/bc_brm_horseshoe_final.rds"
 )
 
-cat("\nModels saved to RDS files.\n")
+
 
